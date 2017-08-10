@@ -13,7 +13,7 @@ class TableGenerator:
         self.header = '! Username !! Recent Edits within  !! Recent Edits in Wikipedia !! First Edit Date !! Most Recent Edit Date \n'
         self.file_start = '{| class="wikitable sortable"\n |-\n' + self.header  # begining of the table
 
-        self.delimiter = '**'  # what the csv is seperated by
+        self.delimiter = '**'  # what the csv is separated by
 
         self.projects = dict()  # keeps record of all projects
         self.users = dict()  # keeps record of all users that have been recommended, prevents duplicates
@@ -28,13 +28,20 @@ class TableGenerator:
         self.dict_project_newcomers = self.read_file_newcomers()
         self.dict_project_rules = self.read_file_rule()
 
+
+    ############
+    #read_files_newcomers and read_file_rule are defined for specific files
+
     def read_file_newcomers(self):
+        #reads the file, makes a dictionary for each user. that dict is added to dict_project_newcomers definition depending on project: with {project: users}
         dict_project_newcomers = {}
-        filename = "data/recommendations_newcomers.csv"
+        filename = "recommendations_newcomers.csv"
         for line in open(filename, "r").readlines()[1:]:
             project = line.split(self.delimiter)[0]
 
             user_text = line.split(self.delimiter)[1]
+
+            #dictionary of this users info
             dict_user_info = {'user_id': int(line.split(self.delimiter)[2]),
                               'first_article': line.split(self.delimiter)[3],
                               'project_edits': int(line.split(self.delimiter)[4]),
@@ -47,7 +54,8 @@ class TableGenerator:
             else:
                 recommended_newcomers = {}
                 dict_project_newcomers[project] = recommended_newcomers
-            recommended_newcomers[user_text] = dict_user_info
+            recommended_newcomers[user_text] = dict_user_info #user info added to dictionary under their name
+                #Does not account for multiple users across projects
 
         projects = list(dict_project_newcomers)
         self.sample_projects = self.sample_projects.union(projects)
@@ -56,7 +64,7 @@ class TableGenerator:
 
     def read_file_rule(self):
         dict_project_rules = {}
-        filename = "data/recommendations_rule.csv"
+        filename = "recommendations_rule.csv"
         for line in open(filename, "r").readlines()[1:]:
             project = line.split(self.delimiter)[0]
 
@@ -76,31 +84,24 @@ class TableGenerator:
         self.sample_projects = self.sample_projects & set(list(dict_project_rules))
         return dict_project_rules
 
-
-    def input_filename(self):
-        from sys import argv
-        param1 = argv[0]
-        argv.remove(param1)
-        self.files = argv
-
-
-    def input_files(self):
-        print('Enter the name(s) of newcomer files')
-        something = True
-        while something:
-            file_name = input('File: ')
-            if file_name == '':
-                something = False
-            else:
-                self.files.append(file_name)  # files is a list of all the newcomer files
+    #used if file names are taken in from command line
+    #def input_files(self):
+    #    print('Enter the name(s) of newcomer files')
+    #    something = True
+    #    while something:
+    #        file_name = input('File: ')
+    #        if file_name == '':
+    #            something = False
+    #        else:
+    #            self.files.append(file_name)  # files is a list of all the newcomer files
 
     def execute(self):
         if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
+            os.makedirs(self.output_dir)  #this is not working
 
-        for project in self.sample_projects:
+        for project in self.sample_projects: #sample_projects in the list of projects
             # write newcomers into file
-            fout = open(self.output_dir + project + ".csv", "w")
+            fout = open(self.output_dir + project + '.csv', 'a')
 
             print("{}".format(self.file_start), file=fout)
 
@@ -153,22 +154,23 @@ class TableGenerator:
                 del project_members[editor_text]
             print("|}", file=fout)
 
+    #finish of tables if project files alreaedy closed
+    #def finish(self):
+    #    for key in self.projects:
+    #        project_file_name = key + '.csv'
+    #        project_file = open(project_file_name, 'a')
+    #        project_file.write('|}')
+    #        project_file.close()
 
-    def finish(self):
-        for key in self.projects:
-            project_file_name = key + '.csv'
-            project_file = open(project_file_name, 'a')
-            project_file.write('|}')
-            project_file.close()
-
-    def files_table(self):
-        files_lst = self.files
-        for file in files_lst:
-            f = open(file, 'r')
-            f.readline()  # removes titles
-            self.file_data += list(f)  # still in string format
-            f.close()
-        #self.file_data = random.shuffle(self.file_data)  # mixes together all file data points
+    #takes data from all files and puts into one array
+    #def files_table(self):
+    #    files_lst = self.files
+    #    for file in files_lst:
+    #        f = open(file, 'r')
+    #        f.readline()  # removes titles
+    #        self.file_data += list(f)  # still in string format
+    #        f.close()
+    #    #self.file_data = random.shuffle(self.file_data)  # mixes together all file data points
 
 
 def main():
@@ -176,10 +178,6 @@ def main():
 
     table_generator = TableGenerator()
     table_generator.execute()
-    # table_generator.input_filename() #gets files from command line
-    # table_generator.files_table() #puts data from all tables into one table
-    # table_generator.execute() #creates the table
-    # table_generator.finish() #adds table ends and closes files
 
 
 main()

@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/WikiProjectResearch.iml" filepath="$PROJECT_DIR$/.idea/WikiProjectResearch.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ResearchWikiProjects.iml" filepath="$PROJECT_DIR$/.idea/ResearchWikiProjects.iml" />
     </modules>
   </component>
 </project>
